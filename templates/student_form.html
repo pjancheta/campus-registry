@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ 'Edit student' if mode == 'edit' else 'Enroll a student' }}</h1>
+    <p>All fields marked * are required.</p>
+  </div>
+</div>
+
+<form method="post" class="panel form">
+  <div class="grid">
+    <label>Student No. *
+      <input name="student_no" value="{{ student.student_no if student }}" required maxlength="20">
+    </label>
+    <label>Course *
+      <input name="course" value="{{ student.course if student }}" required maxlength="100" placeholder="e.g. BSIT">
+    </label>
+    <label>First name *
+      <input name="first_name" value="{{ student.first_name if student }}" required maxlength="50">
+    </label>
+    <label>Last name *
+      <input name="last_name" value="{{ student.last_name if student }}" required maxlength="50">
+    </label>
+    <label>Year level *
+      <select name="year_level" required>
+        {% for y in range(1, 7) %}
+          <option value="{{ y }}" {{ 'selected' if student and student.year_level == y }}>Year {{ y }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Email
+      <input name="email" type="email" value="{{ (student.email or '') if student }}" maxlength="100">
+    </label>
+  </div>
+  <div class="form-actions">
+    <button class="btn primary">{{ 'Save changes' if mode == 'edit' else 'Save student' }}</button>
+    <a class="btn ghost" href="{{ url_for('students_list') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

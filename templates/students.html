@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Student Registry</h1>
+    <p>Browse, search and maintain enrolled students.</p>
+  </div>
+  <a class="btn primary" href="{{ url_for('student_new') }}">+ Enroll Student</a>
+</div>
+
+<section class="stats">
+  <div class="stat"><span>Total students</span><b>{{ total }}</b></div>
+  <div class="stat"><span>Showing now</span><b>{{ students|length }}</b></div>
+  <div class="stat"><span>Courses</span><b>{{ courses }}</b></div>
+</section>
+
+<form method="get" class="filters">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search name, student no. or course…">
+  <select name="year">
+    <option value="">All year levels</option>
+    {% for y in range(1, 7) %}
+      <option value="{{ y }}" {{ 'selected' if year == y|string }}>Year {{ y }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn dark">Apply</button>
+  {% if q or year %}<a class="btn ghost" href="{{ url_for('students_list') }}">Reset</a>{% endif %}
+</form>
+
+{% if students %}
+<div class="panel">
+  <table>
+    <thead>
+      <tr><th>Student</th><th>Student No.</th><th>Course</th><th>Year</th><th class="right">Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for s in students %}
+      <tr>
+        <td>
+          <div class="person">
+            <span class="avatar c{{ s.id % 5 }}">{{ s.first_name[0]|upper }}{{ s.last_name[0]|upper }}</span>
+            <div>
+              <strong>{{ s.last_name }}, {{ s.first_name }}</strong>
+              <small>{{ s.email or 'No email' }}</small>
+            </div>
+          </div>
+        </td>
+        <td><code>{{ s.student_no }}</code></td>
+        <td>{{ s.course }}</td>
+        <td><span class="pill y{{ s.year_level }}">Year {{ s.year_level }}</span></td>
+        <td class="right">
+          <div class="row-actions">
+            <a class="btn sm ghost" href="{{ url_for('student_edit', sid=s.id) }}">Edit</a>
+            <form method="post" action="{{ url_for('student_delete', sid=s.id) }}"
+                  onsubmit="return confirm('Delete {{ s.first_name }} {{ s.last_name }}?')">
+              <button class="btn sm danger">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="panel empty">
+  <h3>No students found</h3>
+  <p>Try a different search, or enroll the first student.</p>
+  <a class="btn primary" href="{{ url_for('student_new') }}">+ Enroll Student</a>
+</div>
+{% endif %}
+{% endblock %}
